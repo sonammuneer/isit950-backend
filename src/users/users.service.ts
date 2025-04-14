@@ -18,4 +18,8 @@ export class UsersService {
   async createUser(createUserDto: CreateUserDto): Promise<UserDto> {
     return this.prismaService.user.create({ data: createUserDto });
   }
+
+  async getUserCount(): Promise<number> {
+    return this.prismaService.user.count();
+  }
 }

@@ -13,14 +13,7 @@ export class AuthService {
   ) {}
   saltOrRounds: number = 10;
 
-  async listAllUsers(): Promise<UserDto[]> {
-    return this.usersService.listAllUsers();
-  }
-
-  async signIn(
-    email: string,
-    pass: string,
-  ): Promise<{ access_token: string }> {
+  async signIn(email: string, pass: string): Promise<{ access_token: string }> {
     const user = await this.usersService.findOne(email);
     if (user?.password !== pass) {
       const isMatch = await bcrypt.compare(pass, user?.password);
