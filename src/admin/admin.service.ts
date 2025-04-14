@@ -14,4 +14,8 @@ export class AdminService {
   async getUserCount(): Promise<number> {
     return this.usersService.getUserCount();
   }
+
+  async deleteUser(email: string): Promise<UserDto> {
+    return this.usersService.deleteUser(email);
+  }
 }

@@ -1,4 +1,11 @@
-import { Controller, HttpCode, HttpStatus, Get } from '@nestjs/common';
+import {
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Get,
+  Body,
+  Delete,
+} from '@nestjs/common';
 import { AdminService } from './admin.service';
 
 @Controller('admin')
@@ -16,5 +23,11 @@ export class AdminController {
   async getUserCount() {
     const count = await this.adminService.getUserCount();
     return { totalCount: count };
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Delete('user/delete')
+  async deleteUser(@Body() deleteUserDto: { userEmail: string }) {
+    return await this.adminService.deleteUser(deleteUserDto.userEmail);
   }
 }

@@ -13,7 +13,10 @@ export class AuthService {
   ) {}
   saltOrRounds: number = 10;
 
-  async signIn(email: string, pass: string): Promise<{ access_token: string }> {
+  async signIn(
+    email: string,
+    pass: string,
+  ): Promise<{ access_token: string; role: string }> {
     const user = await this.usersService.findOne(email);
     if (user?.password !== pass) {
       const isMatch = await bcrypt.compare(pass, user?.password);
@@ -23,9 +26,15 @@ export class AuthService {
       }
     }
 
+    let role = 'user';
+    if (email === 'superuser@gmail.com') {
+      role = 'admin';
+    }
+
     const payload = { sub: user.id, username: user.email };
     return {
       access_token: await this.jwtService.signAsync(payload),
+      role: role,
     };
   }
 
