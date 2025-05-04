@@ -5,7 +5,6 @@ import { UserDto } from '../dto/user-dto';
 @Injectable()
 export class AdminService {
   constructor(private usersService: UsersService) {}
-  saltOrRounds: number = 10;
 
   async listAllUsers(): Promise<UserDto[]> {
     return this.usersService.listAllUsers();

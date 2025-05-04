@@ -10,10 +10,17 @@ datasource db {
 }
 
 model User {
-  id          Int    @id @default(autoincrement())
+  id          String @id @default(uuid())
   email       String @unique
   password    String
   name        String
   phonenumber String
   dateofbirth String
+}
+
+model Hotel {
+  id         String @id @default(uuid())
+  name       String @unique
+  place      String
+  adminemail String
 }
