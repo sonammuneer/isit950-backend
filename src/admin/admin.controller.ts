@@ -48,6 +48,7 @@ export class AdminController {
   @Post('hotel/create')
   async createHotel(@Body() request: CreateHotelDto) {
     const result = await this.hotelsService.createHotel(request);
+    console.log(result);
     return result;
   }
 }
