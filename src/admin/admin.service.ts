@@ -6,12 +6,8 @@ import { UserDto } from '../dto/user-dto';
 export class AdminService {
   constructor(private usersService: UsersService) {}
 
-  async listAllUsers() { // : Promise<UserDto[]>
-    try {
-      return this.usersService.listAllUsers();
-    } catch (error) {
-      return { message: error };
-    }
+  async listAllUsers(): Promise<UserDto[]> {
+    return this.usersService.listAllUsers();
   }
 
   async getUserCount(): Promise<number> {
