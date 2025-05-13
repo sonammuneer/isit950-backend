@@ -14,4 +14,8 @@ export class HotelsService {
   async createHotel(request: CreateHotelDto): Promise<HotelDto> {
     return this.prismaService.hotel.create({ data: request });
   }
+
+  async getHotels(): Promise<HotelDto[]> {
+    return this.prismaService.hotel.findMany();
+  }
 }

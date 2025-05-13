@@ -23,4 +23,12 @@ model Hotel {
   name       String @unique
   place      String
   adminemail String
+  room       Room[]
+}
+
+model Room {
+  id      String @id @default(uuid())
+  name    String @unique
+  hotelid String
+  hotel   Hotel  @relation(fields: [hotelid], references: [id])
 }

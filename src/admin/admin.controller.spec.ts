@@ -4,6 +4,7 @@ import { AdminService } from './admin.service';
 import { UsersService } from '../users/users.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { HotelsService } from '../hotels/hotels.service';
+import { RoomsService } from '../rooms/rooms.service';
 
 describe('AdminController', () => {
   let controller: AdminController;
@@ -11,7 +12,13 @@ describe('AdminController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AdminController],
-      providers: [AdminService, UsersService, PrismaService, HotelsService],
+      providers: [
+        AdminService,
+        UsersService,
+        PrismaService,
+        HotelsService,
+        RoomsService,
+      ],
     }).compile();
 
     controller = module.get<AdminController>(AdminController);

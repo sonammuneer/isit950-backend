@@ -6,16 +6,21 @@ import {
   Body,
   Delete,
   Post,
+  Put,
+  Param,
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { HotelsService } from '../hotels/hotels.service';
 import { CreateHotelDto } from '../dto/create-hotel.dto';
+import { RoomsService } from '../rooms/rooms.service';
+import { CreateRoomDto } from '../dto/create-room.dto';
 
 @Controller('admin')
 export class AdminController {
   constructor(
     private adminService: AdminService,
     private hotelsService: HotelsService,
+    private roomsService: RoomsService,
   ) {}
 
   @HttpCode(HttpStatus.OK)
@@ -48,9 +53,31 @@ export class AdminController {
   @Post('hotel/create')
   async createHotel(@Body() request: CreateHotelDto) {
     const result = await this.hotelsService.createHotel(request);
-    console.log(result);
     return result;
   }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('room/create')
+  async createRoom(@Body() request: CreateRoomDto) {
+    const result = await this.roomsService.createRoom(request);
+    return result;
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Put('room/update')
+  editUser(@Body() createRoomDto: CreateRoomDto) {
+    return this.roomsService.editRoom(createRoomDto);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Get('room/fetch/:roomid')
+  getRooms(@Param() params: any) {
+    return this.roomsService.fetchRoom(params.roomid);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Delete('room/delete')
+  async deleteRoom(@Body() deleteRoomDto: { roomId: string }) {
+    return await this.roomsService.deleteRoom(deleteRoomDto.roomId);
+  }
 }
-
-

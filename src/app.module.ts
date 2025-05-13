@@ -6,9 +6,17 @@ import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AdminModule } from './admin/admin.module';
 import { HotelsModule } from './hotels/hotels.module';
+import { RoomsModule } from './rooms/rooms.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, PrismaModule, AdminModule, HotelsModule],
+  imports: [
+    AuthModule,
+    UsersModule,
+    PrismaModule,
+    AdminModule,
+    HotelsModule,
+    RoomsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
