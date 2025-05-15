@@ -14,6 +14,7 @@ import { HotelsService } from '../hotels/hotels.service';
 import { CreateHotelDto } from '../dto/create-hotel.dto';
 import { RoomsService } from '../rooms/rooms.service';
 import { CreateRoomDto } from '../dto/create-room.dto';
+import { BookingService } from '../booking/booking.service';
 
 @Controller('admin')
 export class AdminController {
@@ -21,6 +22,7 @@ export class AdminController {
     private adminService: AdminService,
     private hotelsService: HotelsService,
     private roomsService: RoomsService,
+    private bookingService: BookingService,
   ) {}
 
   @HttpCode(HttpStatus.OK)
@@ -79,5 +81,11 @@ export class AdminController {
   @Delete('room/delete')
   async deleteRoom(@Body() deleteRoomDto: { roomId: string }) {
     return await this.roomsService.deleteRoom(deleteRoomDto.roomId);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Get('booking/list/:hotelid')
+  getBookingsByHotelId(@Param() params: any) {
+    return this.bookingService.getBookingsByHotelId(params.hotelid);
   }
 }

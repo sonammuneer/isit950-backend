@@ -5,6 +5,7 @@ import { UsersService } from '../users/users.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { HotelsService } from '../hotels/hotels.service';
 import { RoomsService } from '../rooms/rooms.service';
+import { BookingService } from '../booking/booking.service';
 
 describe('AdminController', () => {
   let controller: AdminController;
@@ -18,6 +19,7 @@ describe('AdminController', () => {
         PrismaService,
         HotelsService,
         RoomsService,
+        BookingService,
       ],
     }).compile();
 

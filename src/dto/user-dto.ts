@@ -5,4 +5,5 @@ export class UserDto {
   name: string;
   phonenumber: string;
   dateofbirth: string;
+  role: string;
 }

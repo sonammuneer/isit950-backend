@@ -26,15 +26,10 @@ export class AuthService {
       }
     }
 
-    let role = 'user';
-    if (email === 'superuser@gmail.com') {
-      role = 'admin';
-    }
-
     const payload = { sub: user.id, username: user.email };
     return {
       access_token: await this.jwtService.signAsync(payload),
-      role: role,
+      role: user.role,
     };
   }
 
