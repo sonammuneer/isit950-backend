@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateHotelDto } from '../dto/create-hotel.dto';
 import { HotelDto } from 'src/dto/hotel-dto';
+import { HotelFetchDto } from 'src/dto/hotel-fetch.dto';
 
 @Injectable()
 export class HotelsService {
@@ -42,11 +43,12 @@ export class HotelsService {
     return result;
   }
 
-  async fetchHotelById(hotelId: string): Promise<HotelDto> {
+  async fetchHotelById(hotelId: string): Promise<HotelFetchDto> {
     const hotel = await this.prismaService.hotel.findFirst({
       where: { id: hotelId },
       include: {
         tags: true,
+        room: true,
       },
     });
     const { tags, ...hotelData } = hotel;
