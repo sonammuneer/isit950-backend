@@ -7,13 +7,19 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
 } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { CreateBookingDto } from '../dto/create-booking.dto';
+import { CheckRoomAvailabilityDto } from '../dto/check-room-availability.dto';
+import { RoomsService } from '../rooms/rooms.service';
 
 @Controller('booking')
 export class BookingController {
-  constructor(private bookingService: BookingService) {}
+  constructor(
+    private bookingService: BookingService,
+    private roomsService: RoomsService,
+  ) {}
 
   @HttpCode(HttpStatus.OK)
   @Post('create')
@@ -39,5 +45,13 @@ export class BookingController {
     return this.bookingService.getBookingByBookingId(
       deleteBookingDto.bookingId,
     );
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Put('availability/fetch')
+  fetchAvailabilityByRoomId(
+    @Body() availabilityCheckDto: CheckRoomAvailabilityDto,
+  ) {
+    return this.roomsService.fetchAvailabilityByRoomId(availabilityCheckDto);
   }
 }

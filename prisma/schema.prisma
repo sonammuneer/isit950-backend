@@ -30,11 +30,13 @@ model Hotel {
 }
 
 model Room {
-  id       String     @id @default(uuid())
-  name     String     @unique
-  hotelid  String
-  hotel    Hotel      @relation(fields: [hotelid], references: [id])
-  Bookings Bookings[]
+  id           String     @id @default(uuid())
+  name         String     @unique
+  count        Int
+  no_of_guests Int
+  hotelid      String
+  hotel        Hotel      @relation(fields: [hotelid], references: [id])
+  Bookings     Bookings[]
 }
 
 model Bookings {
@@ -45,6 +47,8 @@ model Bookings {
   enddate       DateTime
   bookinguserid String
   hotelid       String
+  booking_count Int
+  no_of_guests  Int
 }
 
 model Tags {
