@@ -20,11 +20,13 @@ model User {
 }
 
 model Hotel {
-  id         String @id @default(uuid())
-  name       String @unique
-  place      String
-  adminemail String
-  room       Room[]
+  id          String @id @default(uuid())
+  name        String @unique
+  place       String
+  adminemail  String
+  description String
+  room        Room[]
+  tags        Tags[]
 }
 
 model Room {
@@ -43,4 +45,11 @@ model Bookings {
   enddate       DateTime
   bookinguserid String
   hotelid       String
+}
+
+model Tags {
+  id      String @id @default(uuid())
+  name    String
+  hotelid String
+  hotel   Hotel  @relation(fields: [hotelid], references: [id])
 }

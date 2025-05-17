@@ -11,11 +11,48 @@ export class HotelsService {
     return this.prismaService.hotel.count();
   }
 
-  async createHotel(request: CreateHotelDto): Promise<HotelDto> {
-    return this.prismaService.hotel.create({ data: request });
+  async createHotel(request: CreateHotelDto) {
+    const { tags, ...hotelData } = request;
+    return await this.prismaService.hotel.create({
+      data: {
+        ...hotelData,
+        tags: {
+          create: tags?.map((tagName) => ({ name: tagName })) || [],
+        },
+      },
+      include: {
+        tags: true,
+      },
+    });
   }
 
   async getHotels(): Promise<HotelDto[]> {
-    return this.prismaService.hotel.findMany();
+    const hotels = await this.prismaService.hotel.findMany({
+      include: {
+        tags: true,
+      },
+    });
+    const result = hotels.map((hotel) => {
+      const { tags, ...hotelData } = hotel;
+      return {
+        ...hotelData,
+        tags: tags.map((tag) => tag.name),
+      };
+    });
+    return result;
+  }
+
+  async fetchHotelById(hotelId: string): Promise<HotelDto> {
+    const hotel = await this.prismaService.hotel.findFirst({
+      where: { id: hotelId },
+      include: {
+        tags: true,
+      },
+    });
+    const { tags, ...hotelData } = hotel;
+    return {
+      ...hotelData,
+      tags: tags.map((tag) => tag.name),
+    };
   }
 }

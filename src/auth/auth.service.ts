@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from '../dto/create-user.dto';
@@ -18,11 +22,15 @@ export class AuthService {
     pass: string,
   ): Promise<{ access_token: string; role: string }> {
     const user = await this.usersService.findOne(email);
+    if (!user) {
+      throw new HttpException("User doesn't exist for this email!", 401);
+    }
+
     if (user?.password !== pass) {
       const isMatch = await bcrypt.compare(pass, user?.password);
 
       if (!isMatch) {
-        throw new UnauthorizedException();
+        throw new UnauthorizedException('Your password is incorrect!');
       }
     }
 
@@ -43,7 +51,13 @@ export class AuthService {
       ...createUserDto,
       password: hashPass,
     };
-    const user = this.usersService.createUser(data);
-    return user;
+    try {
+      const user = await this.usersService.createUser(data);
+      return user;
+    } catch (e: any) {
+      if (e.message.includes('UNIQUE constraint failed')) {
+        throw new HttpException('User already exists!!', 409);
+      }
+    }
   }
 }

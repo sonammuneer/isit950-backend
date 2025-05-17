@@ -3,4 +3,6 @@ export class CreateHotelDto {
   adminemail: string;
   name: string;
   place: string;
+  description: string;
+  tags: string[];
 }

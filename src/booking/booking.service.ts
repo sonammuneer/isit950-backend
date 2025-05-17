@@ -26,4 +26,16 @@ export class BookingService {
       where: { hotelid: hotelId },
     });
   }
+
+  async getBookingByBookingId(bookingId: string): Promise<BookingDto> {
+    return this.prismaService.bookings.findFirst({
+      where: { id: bookingId },
+    });
+  }
+
+  async cancelBooking(bookingId: string): Promise<BookingDto> {
+    return this.prismaService.bookings.delete({
+      where: { id: bookingId },
+    });
+  }
 }

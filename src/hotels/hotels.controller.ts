@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Param } from '@nestjs/common';
 import { HotelsService } from './hotels.service';
 
 @Controller('hotels')
@@ -9,5 +9,11 @@ export class HotelsController {
   @Get('list')
   getHotels() {
     return this.hotelsService.getHotels();
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Get('fetch/:id')
+  fetchHotelById(@Param() params: any) {
+    return this.hotelsService.fetchHotelById(params.id);
   }
 }

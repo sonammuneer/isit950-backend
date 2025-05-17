@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -24,5 +25,19 @@ export class BookingController {
   @Get('list/:userid')
   getBookingsByUserId(@Param() params: any) {
     return this.bookingService.getBookingsByUserId(params.userid);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Get('fetch/:bookingid')
+  getBookingByBookingId(@Param() params: any) {
+    return this.bookingService.getBookingByBookingId(params.bookingid);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Delete('delete')
+  cancelBooking(@Body() deleteBookingDto: { bookingId: string }) {
+    return this.bookingService.getBookingByBookingId(
+      deleteBookingDto.bookingId,
+    );
   }
 }
