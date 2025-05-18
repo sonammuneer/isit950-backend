@@ -41,19 +41,19 @@ model Room {
   no_of_guests Int
   price        Int
   hotelid      String
-  hotel        Hotel      @relation(fields: [hotelid], references: [id])
+  hotel        Hotel      @relation(fields: [hotelid], references: [id], onDelete: Cascade)
   Bookings     Bookings[]
 }
 
 model Bookings {
   id            String   @id @default(uuid())
   roomid        String
-  room          Room     @relation(fields: [roomid], references: [id])
+  room          Room     @relation(fields: [roomid], references: [id], onDelete: Cascade)
   startdate     DateTime
   enddate       DateTime
   bookinguserid String
   hotelid       String
-  hotel         Hotel    @relation(fields: [hotelid], references: [id])
+  hotel         Hotel    @relation(fields: [hotelid], references: [id], onDelete: Cascade)
   booking_count Int
   no_of_guests  Int
 }
@@ -62,22 +62,22 @@ model Tags {
   id      String @id @default(uuid())
   name    String
   hotelid String
-  hotel   Hotel  @relation(fields: [hotelid], references: [id])
+  hotel   Hotel  @relation(fields: [hotelid], references: [id], onDelete: Cascade)
 }
 
 model Favourites {
   id      String @id @default(uuid())
   userid  String
-  user    User   @relation(fields: [userid], references: [id])
+  user    User   @relation(fields: [userid], references: [id], onDelete: Cascade)
   hotelid String
 }
 
 model Review {
   id          String @id @default(uuid())
   hotelid     String
-  hotel       Hotel  @relation(fields: [hotelid], references: [id])
+  hotel       Hotel  @relation(fields: [hotelid], references: [id], onDelete: Cascade)
   description String
   rating      Int
   userid      String
-  user        User   @relation(fields: [userid], references: [id])
+  user        User   @relation(fields: [userid], references: [id], onDelete: Cascade)
 }
