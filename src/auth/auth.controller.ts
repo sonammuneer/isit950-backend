@@ -32,4 +32,10 @@ export class AuthController {
   resetPassword(@Body() request: UpdatePasswordDto) {
     return this.authService.resetPassword(request);
   }
+
+  @HttpCode(HttpStatus.OK)
+  @Put('password/forgot')
+  forgotPassword(@Body() request: { email: string }) {
+    return this.authService.forgotPassword(request);
+  }
 }

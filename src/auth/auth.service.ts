@@ -80,4 +80,21 @@ export class AuthService {
       email: request.email,
     });
   }
+
+  async forgotPassword(request: { email: string }) {
+    const user = await this.usersService.findOne(request.email);
+    if (!user) {
+      throw new HttpException("User doesn't exist for this email!", 401);
+    }
+
+    const temporaryPassword = Math.random().toString(36).slice(2, 10);
+    const hashPass = await bcrypt.hash(temporaryPassword, this.saltOrRounds);
+
+    await this.usersService.updatePassword({
+      newPassword: hashPass,
+      email: request.email,
+    });
+
+    return { temporaryPassword: temporaryPassword };
+  }
 }
