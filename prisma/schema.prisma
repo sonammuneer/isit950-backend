@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
+  previewFeatures = ["driverAdapters", "omitApi"]
   binaryTargets   = ["native", "rhel-openssl-3.0.x"]
 }
 
@@ -22,8 +22,8 @@ model User {
 }
 
 model Hotel {
-  id          String   @id @default(uuid())
-  name        String   @unique
+  id          String     @id @default(uuid())
+  name        String     @unique
   place       String
   adminemail  String
   description String
@@ -31,6 +31,7 @@ model Hotel {
   room        Room[]
   tags        Tags[]
   reviews     Review[]
+  Bookings    Bookings[]
 }
 
 model Room {
@@ -52,6 +53,7 @@ model Bookings {
   enddate       DateTime
   bookinguserid String
   hotelid       String
+  hotel         Hotel    @relation(fields: [hotelid], references: [id])
   booking_count Int
   no_of_guests  Int
 }

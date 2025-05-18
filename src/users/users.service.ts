@@ -3,21 +3,31 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto as CreateUserDto } from '../dto/create-user.dto';
 import { UserDto } from '../dto/user-dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { FetchUserDto } from '../dto/fetch-user-dto';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async listAllUsers(): Promise<UserDto[]> {
-    return this.prismaService.user.findMany();
+  async listAllUsers(): Promise<FetchUserDto[]> {
+    return this.prismaService.user.findMany({
+      omit: {
+        password: true,
+      },
+    });
   }
 
   async findOne(email: string): Promise<UserDto | undefined> {
     return this.prismaService.user.findUnique({ where: { email } });
   }
 
-  async createUser(createUserDto: CreateUserDto): Promise<UserDto> {
-    return this.prismaService.user.create({ data: createUserDto });
+  async createUser(createUserDto: CreateUserDto): Promise<FetchUserDto> {
+    return this.prismaService.user.create({
+      data: createUserDto,
+      omit: {
+        password: true,
+      },
+    });
   }
 
   async getUserCount(): Promise<number> {
@@ -32,7 +42,7 @@ export class UsersService {
     });
   }
 
-  async editUser(updateUserDto: UpdateUserDto) {
+  async editUser(updateUserDto: UpdateUserDto): Promise<FetchUserDto> {
     return await this.prismaService.user.update({
       where: {
         email: updateUserDto.email,
@@ -40,13 +50,19 @@ export class UsersService {
       data: {
         ...updateUserDto,
       },
+      omit: {
+        password: true,
+      },
     });
   }
 
-  async fetchUser(email: string) {
+  async fetchUser(email: string): Promise<FetchUserDto> {
     return await this.prismaService.user.findFirst({
       where: {
         email: email,
+      },
+      omit: {
+        password: true,
       },
     });
   }
@@ -70,6 +86,18 @@ export class UsersService {
         id: {
           in: favouritedHotelIds,
         },
+      },
+    });
+  }
+
+  async updatePassword(request: { newPassword: string; email: string }) {
+    return this.prismaService.user.update({
+      where: { email: request.email },
+      data: {
+        password: request.newPassword,
+      },
+      omit: {
+        password: true,
       },
     });
   }

@@ -5,9 +5,11 @@ import {
   HttpCode,
   HttpStatus,
   Get,
+  Put,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../dto/create-user.dto';
+import { UpdatePasswordDto } from '../dto/update-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -23,5 +25,11 @@ export class AuthController {
   @Post('signup')
   signUp(@Body() signUpDto: CreateUserDto) {
     return this.authService.signUp(signUpDto);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Put('password/reset')
+  resetPassword(@Body() request: UpdatePasswordDto) {
+    return this.authService.resetPassword(request);
   }
 }

@@ -7,7 +7,8 @@ import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from '../dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
-import { UserDto } from '../dto/user-dto';
+import { FetchUserDto } from '../dto/fetch-user-dto';
+import { UpdatePasswordDto } from '../dto/update-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -41,7 +42,7 @@ export class AuthService {
     };
   }
 
-  async signUp(createUserDto: CreateUserDto): Promise<UserDto> {
+  async signUp(createUserDto: CreateUserDto): Promise<FetchUserDto> {
     const hashPass = await bcrypt.hash(
       createUserDto.password,
       this.saltOrRounds,
@@ -59,5 +60,24 @@ export class AuthService {
         throw new HttpException('User already exists!!', 409);
       }
     }
+  }
+
+  async resetPassword(request: UpdatePasswordDto) {
+    const user = await this.usersService.findOne(request.email);
+
+    if (user?.password !== request.oldPassword) {
+      const isMatch = await bcrypt.compare(request.oldPassword, user?.password);
+
+      if (!isMatch) {
+        throw new UnauthorizedException('Old password is incorrect!');
+      }
+    }
+
+    const hashPass = await bcrypt.hash(request.newPassword, this.saltOrRounds);
+
+    return this.usersService.updatePassword({
+      newPassword: hashPass,
+      email: request.email,
+    });
   }
 }
