@@ -107,4 +107,10 @@ export class AdminController {
   upcomingBookings(@Param() params: any) {
     return this.adminService.upcomingBookings(params.hotelid);
   }
+
+  @HttpCode(HttpStatus.OK)
+  @Get('superuser/stats')
+  superUserStats() {
+    return this.adminService.superUserStats();
+  }
 }
