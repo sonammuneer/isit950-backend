@@ -27,7 +27,7 @@ export class HotelsService {
     const temporaryPassword = Math.random().toString(36).slice(2, 10);
     try {
       await this.usersService.createUser({
-        id: '',
+        id: crypto.randomUUID(),
         email: request.adminemail,
         password: temporaryPassword,
         name: request.name,
