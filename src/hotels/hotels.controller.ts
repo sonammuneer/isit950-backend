@@ -1,5 +1,14 @@
-import { Controller, Get, HttpCode, HttpStatus, Param } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+} from '@nestjs/common';
 import { HotelsService } from './hotels.service';
+import { ReviewDto } from 'src/dto/create-review.dto';
 
 @Controller('hotels')
 export class HotelsController {
@@ -15,5 +24,11 @@ export class HotelsController {
   @Get('fetch/:id')
   fetchHotelById(@Param() params: any) {
     return this.hotelsService.fetchHotelById(params.id);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('review/create')
+  createReview(@Body() request: ReviewDto) {
+    return this.hotelsService.createReview(request);
   }
 }

@@ -10,23 +10,27 @@ datasource db {
 }
 
 model User {
-  id          String  @id @default(uuid())
-  email       String  @unique
+  id          String       @id @default(uuid())
+  email       String       @unique
   password    String
   name        String
   phonenumber String
   dateofbirth String
   role        String?
+  favourites  Favourites[]
+  Review      Review[]
 }
 
 model Hotel {
-  id          String @id @default(uuid())
-  name        String @unique
+  id          String   @id @default(uuid())
+  name        String   @unique
   place       String
   adminemail  String
   description String
+  rating      Int
   room        Room[]
   tags        Tags[]
+  reviews     Review[]
 }
 
 model Room {
@@ -34,6 +38,7 @@ model Room {
   name         String     @unique
   count        Int
   no_of_guests Int
+  price        Int
   hotelid      String
   hotel        Hotel      @relation(fields: [hotelid], references: [id])
   Bookings     Bookings[]
@@ -56,4 +61,21 @@ model Tags {
   name    String
   hotelid String
   hotel   Hotel  @relation(fields: [hotelid], references: [id])
+}
+
+model Favourites {
+  id      String @id @default(uuid())
+  userid  String
+  user    User   @relation(fields: [userid], references: [id])
+  hotelid String
+}
+
+model Review {
+  id          String @id @default(uuid())
+  hotelid     String
+  hotel       Hotel  @relation(fields: [hotelid], references: [id])
+  description String
+  rating      Int
+  userid      String
+  user        User   @relation(fields: [userid], references: [id])
 }

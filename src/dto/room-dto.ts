@@ -4,4 +4,5 @@ export class RoomDto {
   hotelid: string;
   count: number;
   no_of_guests: number;
+  price: number;
 }

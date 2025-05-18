@@ -5,6 +5,8 @@ import {
   Body,
   Put,
   Get,
+  Post,
+  Param,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from '../dto/update-user.dto';
@@ -23,5 +25,22 @@ export class UserController {
   @Get('fetch')
   fetchUser(@Body() fetchUserDto: { email: string }) {
     return this.usersService.fetchUser(fetchUserDto.email);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('addtofavourites')
+  addToFavourites(
+    @Body() addToFavouritesDto: { userId: string; hotelId: string },
+  ) {
+    return this.usersService.addToFavourites(
+      addToFavouritesDto.userId,
+      addToFavouritesDto.hotelId,
+    );
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Get('favourites/fetch/:userid')
+  fetchFavouritesByUserId(@Param() param: any) {
+    return this.usersService.fetchFavouritesByUserId(param.userid);
   }
 }

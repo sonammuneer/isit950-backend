@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateHotelDto } from '../dto/create-hotel.dto';
 import { HotelDto } from 'src/dto/hotel-dto';
 import { HotelFetchDto } from 'src/dto/hotel-fetch.dto';
+import { ReviewDto } from 'src/dto/create-review.dto';
 
 @Injectable()
 export class HotelsService {
@@ -28,19 +29,7 @@ export class HotelsService {
   }
 
   async getHotels(): Promise<HotelDto[]> {
-    const hotels = await this.prismaService.hotel.findMany({
-      include: {
-        tags: true,
-      },
-    });
-    const result = hotels.map((hotel) => {
-      const { tags, ...hotelData } = hotel;
-      return {
-        ...hotelData,
-        tags: tags.map((tag) => tag.name),
-      };
-    });
-    return result;
+    return this.prismaService.hotel.findMany();
   }
 
   async fetchHotelById(hotelId: string): Promise<HotelFetchDto> {
@@ -49,6 +38,15 @@ export class HotelsService {
       include: {
         tags: true,
         room: true,
+        reviews: {
+          include: {
+            user: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
     const { tags, ...hotelData } = hotel;
@@ -56,5 +54,34 @@ export class HotelsService {
       ...hotelData,
       tags: tags.map((tag) => tag.name),
     };
+  }
+
+  async createReview(createReviewDto: ReviewDto): Promise<ReviewDto> {
+    const review = await this.prismaService.review.create({
+      data: createReviewDto,
+    });
+    const reviewCount = await this.prismaService.review.count({
+      where: {
+        hotelid: createReviewDto.hotelid,
+      },
+    });
+    const rating = await this.prismaService.hotel.findFirst({
+      where: {
+        id: createReviewDto.hotelid,
+      },
+      select: {
+        rating: true,
+      },
+    });
+    const newRating = Math.floor(
+      (rating.rating * (reviewCount - 1) + review.rating) / reviewCount,
+    );
+    await this.prismaService.hotel.update({
+      where: { id: createReviewDto.hotelid },
+      data: {
+        rating: newRating,
+      },
+    });
+    return review;
   }
 }

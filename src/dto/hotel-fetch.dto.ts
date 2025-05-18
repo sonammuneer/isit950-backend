@@ -1,3 +1,4 @@
+import { ReviewDto } from './create-review.dto';
 import { RoomDto } from './room-dto';
 
 export class HotelFetchDto {
@@ -8,4 +9,5 @@ export class HotelFetchDto {
   description: string;
   tags: string[];
   room: RoomDto[];
+  reviews: ReviewDto[];
 }

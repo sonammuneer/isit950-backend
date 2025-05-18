@@ -50,4 +50,27 @@ export class UsersService {
       },
     });
   }
+
+  async addToFavourites(userId: string, hotelId: string) {
+    return await this.prismaService.favourites.create({
+      data: {
+        userid: userId,
+        hotelid: hotelId,
+      },
+    });
+  }
+
+  async fetchFavouritesByUserId(userId: string) {
+    const favourites = await this.prismaService.favourites.findMany({
+      where: { userid: userId },
+    });
+    const favouritedHotelIds = favourites.map((favourite) => favourite.hotelid);
+    return await this.prismaService.hotel.findMany({
+      where: {
+        id: {
+          in: favouritedHotelIds,
+        },
+      },
+    });
+  }
 }

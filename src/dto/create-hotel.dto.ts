@@ -5,4 +5,5 @@ export class CreateHotelDto {
   place: string;
   description: string;
   tags: string[];
+  rating: number = 0;
 }
