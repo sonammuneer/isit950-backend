@@ -16,7 +16,7 @@ import { RoomsService } from '../rooms/rooms.service';
 import { CreateRoomDto } from '../dto/create-room.dto';
 import { BookingService } from '../booking/booking.service';
 import { CreateOnboardingRequestDto } from '../dto/create-onboarding-request.dto';
-import { UpdateHotelDto } from 'src/dto/update-hotel.dto';
+import { UpdateHotelDto } from '../dto/update-hotel.dto';
 
 @Controller('admin')
 export class AdminController {
