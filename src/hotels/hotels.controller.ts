@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
 } from '@nestjs/common';
 import { HotelsService } from './hotels.service';
 import { ReviewDto } from '../dto/create-review.dto';
@@ -30,5 +31,11 @@ export class HotelsController {
   @Post('review/create')
   createReview(@Body() request: ReviewDto) {
     return this.hotelsService.createReview(request);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Put('search')
+  searchHotels(@Body() request: { keywords: string[] }) {
+    return this.hotelsService.searchHotels(request.keywords);
   }
 }

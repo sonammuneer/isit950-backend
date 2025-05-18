@@ -84,4 +84,21 @@ export class HotelsService {
     });
     return review;
   }
+
+  async searchHotels(keywords: string[]): Promise<HotelDto[]> {
+    const keywordConditions = keywords.map((keyword) => ({
+      OR: [
+        { name: { contains: keyword.toLowerCase() } },
+        { place: { contains: keyword.toLowerCase() } },
+        {
+          tags: { some: { name: { contains: keyword.toLowerCase() } } },
+        },
+      ],
+    }));
+    return this.prismaService.hotel.findMany({
+      where: {
+        OR: keywordConditions,
+      },
+    });
+  }
 }

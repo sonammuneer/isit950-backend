@@ -22,9 +22,9 @@ export class UserController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @Get('fetch')
-  fetchUser(@Body() fetchUserDto: { email: string }) {
-    return this.usersService.fetchUser(fetchUserDto.email);
+  @Get('fetch/:email')
+  fetchUser(@Param() param: any) {
+    return this.usersService.fetchUser(param.email);
   }
 
   @HttpCode(HttpStatus.OK)
