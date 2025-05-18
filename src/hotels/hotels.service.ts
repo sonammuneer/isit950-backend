@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateHotelDto } from '../dto/create-hotel.dto';
-import { HotelDto } from 'src/dto/hotel-dto';
-import { HotelFetchDto } from 'src/dto/hotel-fetch.dto';
-import { ReviewDto } from 'src/dto/create-review.dto';
+import { HotelDto } from '../dto/hotel-dto';
+import { HotelFetchDto } from '../dto/hotel-fetch.dto';
+import { ReviewDto } from '../dto/create-review.dto';
 
 @Injectable()
 export class HotelsService {

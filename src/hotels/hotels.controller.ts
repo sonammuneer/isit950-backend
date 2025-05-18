@@ -8,7 +8,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { HotelsService } from './hotels.service';
-import { ReviewDto } from 'src/dto/create-review.dto';
+import { ReviewDto } from '../dto/create-review.dto';
 
 @Controller('hotels')
 export class HotelsController {
