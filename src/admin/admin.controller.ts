@@ -15,6 +15,8 @@ import { CreateHotelDto } from '../dto/create-hotel.dto';
 import { RoomsService } from '../rooms/rooms.service';
 import { CreateRoomDto } from '../dto/create-room.dto';
 import { BookingService } from '../booking/booking.service';
+import { CreateOnboardingRequestDto } from '../dto/create-onboarding-request.dto';
+import { UpdateHotelDto } from 'src/dto/update-hotel.dto';
 
 @Controller('admin')
 export class AdminController {
@@ -59,6 +61,13 @@ export class AdminController {
   }
 
   @HttpCode(HttpStatus.OK)
+  @Put('hotel/update')
+  async updateHotel(@Body() request: UpdateHotelDto) {
+    const result = await this.hotelsService.updateHotel(request);
+    return result;
+  }
+
+  @HttpCode(HttpStatus.OK)
   @Post('room/create')
   async createRoom(@Body() request: CreateRoomDto) {
     const result = await this.roomsService.createRoom(request);
@@ -87,5 +96,17 @@ export class AdminController {
   @Get('booking/list/:hotelid')
   getBookingsByHotelId(@Param() params: any) {
     return this.bookingService.getBookingsByHotelId(params.hotelid);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('onboard/request')
+  createOnboardingRequest(@Body() request: CreateOnboardingRequestDto) {
+    return this.adminService.createOnboardingRequest(request);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Get('onboard/request/list')
+  fetchPendingRequests() {
+    return this.adminService.fetchPendingRequests();
   }
 }

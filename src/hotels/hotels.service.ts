@@ -1,30 +1,91 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateHotelDto } from '../dto/create-hotel.dto';
 import { HotelDto } from '../dto/hotel-dto';
 import { HotelFetchDto } from '../dto/hotel-fetch.dto';
 import { ReviewDto } from '../dto/create-review.dto';
+import { UpdateHotelDto } from '../dto/update-hotel.dto';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class HotelsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly usersService: UsersService,
+  ) {}
 
   async getHotelsCount(): Promise<number> {
     return this.prismaService.hotel.count();
   }
 
   async createHotel(request: CreateHotelDto) {
-    const { tags, ...hotelData } = request;
-    return await this.prismaService.hotel.create({
-      data: {
-        ...hotelData,
-        tags: {
-          create: tags?.map((tagName) => ({ name: tagName })) || [],
+    const { requestId, ...hotelData } = request;
+    await this.prismaService.hotel.create({
+      data: hotelData,
+    });
+
+    const temporaryPassword = Math.random().toString(36).slice(2, 10);
+    try {
+      await this.usersService.createUser({
+        id: '',
+        email: request.adminemail,
+        password: temporaryPassword,
+        name: request.name,
+        phonenumber: '',
+        dateofbirth: '',
+        role: 'admin',
+      });
+
+      await this.prismaService.onboardingRequests.delete({
+        where: { id: requestId },
+      });
+
+      return {
+        email: request.adminemail,
+        password: temporaryPassword,
+      };
+    } catch (e: any) {
+      if (e.message.includes('UNIQUE constraint failed')) {
+        throw new HttpException('User already exists!!', 409);
+      }
+    }
+  }
+
+  async updateHotel(request: UpdateHotelDto) {
+    const { tags: newTags, ...hotelData } = request;
+
+    return await this.prismaService.$transaction(async (prisma) => {
+      const existingHotel = await prisma.hotel.findUnique({
+        where: { id: request.id },
+        include: { tags: true },
+      });
+
+      const tagsToDelete = existingHotel.tags
+        .filter((existingTag) => !newTags?.includes(existingTag.name))
+        .map((tag) => tag.id);
+
+      const existingTagNames = existingHotel.tags.map((tag) => tag.name);
+      const tagsToCreate =
+        newTags?.filter((tagName) => !existingTagNames.includes(tagName)) || [];
+
+      return await prisma.hotel.update({
+        where: { id: request.id },
+        data: {
+          ...hotelData,
+          tags: {
+            deleteMany:
+              tagsToDelete.length > 0
+                ? {
+                    id: { in: tagsToDelete },
+                  }
+                : undefined,
+            create: tagsToCreate.map((tagName) => ({ name: tagName })),
+          },
         },
-      },
-      include: {
-        tags: true,
-      },
+        include: {
+          tags: true,
+        },
+      });
     });
   }
 

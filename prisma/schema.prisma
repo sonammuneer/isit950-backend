@@ -26,8 +26,8 @@ model Hotel {
   name        String     @unique
   place       String
   adminemail  String
-  description String
-  rating      Int
+  description String?
+  rating      Int?
   room        Room[]
   tags        Tags[]
   reviews     Review[]
@@ -80,4 +80,12 @@ model Review {
   rating      Int
   userid      String
   user        User   @relation(fields: [userid], references: [id], onDelete: Cascade)
+}
+
+model OnboardingRequests {
+  id               String  @id @default(uuid())
+  hotelname        String
+  location         String
+  hoteladminemail  String
+  hoteldescription String?
 }

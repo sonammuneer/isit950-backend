@@ -3,7 +3,7 @@ export class CreateHotelDto {
   adminemail: string;
   name: string;
   place: string;
-  description?: string;
+  description: string;
+  tags: string[];
   rating: number = 0;
-  requestId: string;
 }
