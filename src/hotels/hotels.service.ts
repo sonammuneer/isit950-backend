@@ -6,6 +6,7 @@ import { HotelFetchDto } from '../dto/hotel-fetch.dto';
 import { ReviewDto } from '../dto/create-review.dto';
 import { UpdateHotelDto } from '../dto/update-hotel.dto';
 import { UsersService } from '../users/users.service';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class HotelsService {
@@ -13,6 +14,7 @@ export class HotelsService {
     private readonly prismaService: PrismaService,
     private readonly usersService: UsersService,
   ) {}
+  saltOrRounds: number = 10;
 
   async getHotelsCount(): Promise<number> {
     return this.prismaService.hotel.count();
@@ -25,11 +27,12 @@ export class HotelsService {
     });
 
     const temporaryPassword = Math.random().toString(36).slice(2, 10);
+    const hashPass = await bcrypt.hash(temporaryPassword, this.saltOrRounds);
     try {
       await this.usersService.createUser({
         id: crypto.randomUUID(),
         email: request.adminemail,
-        password: temporaryPassword,
+        password: hashPass,
         name: request.name,
         phonenumber: '',
         dateofbirth: '',
@@ -160,6 +163,13 @@ export class HotelsService {
       where: {
         OR: keywordConditions,
       },
+    });
+  }
+
+  async fetchHotelIdbyHotelAdmin(adminEmail: string) {
+    return await this.prismaService.hotel.findFirst({
+      where: { adminemail: adminEmail },
+      select: { id: true },
     });
   }
 }

@@ -38,4 +38,10 @@ export class HotelsController {
   searchHotels(@Body() request: { keywords: string[] }) {
     return this.hotelsService.searchHotels(request.keywords);
   }
+
+  @HttpCode(HttpStatus.OK)
+  @Get('id/fetch/:adminemail')
+  fetchHotelIdbyHotelAdmin(@Param() params: any) {
+    return this.hotelsService.fetchHotelIdbyHotelAdmin(params.adminemail);
+  }
 }
