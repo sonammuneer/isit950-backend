@@ -19,6 +19,7 @@ model User {
   role        String?
   favourites  Favourites[]
   Review      Review[]
+  Bookings    Bookings[]
 }
 
 model Hotel {
@@ -52,6 +53,7 @@ model Bookings {
   startdate     DateTime
   enddate       DateTime
   bookinguserid String
+  user          User     @relation(fields: [bookinguserid], references: [id], onDelete: Cascade)
   hotelid       String
   hotel         Hotel    @relation(fields: [hotelid], references: [id], onDelete: Cascade)
   booking_count Int

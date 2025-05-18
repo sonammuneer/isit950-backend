@@ -16,10 +16,6 @@ export class AdminService {
     return this.usersService.listAllUsers();
   }
 
-  async getUserCount(): Promise<number> {
-    return this.usersService.getUserCount();
-  }
-
   async deleteUser(email: string): Promise<UserDto> {
     return this.usersService.deleteUser(email);
   }
@@ -33,6 +29,88 @@ export class AdminService {
   }
 
   async fetchPendingRequests() {
-    return this.prismaService.onboardingRequests.findMany({});
+    return this.prismaService.onboardingRequests.findMany();
+  }
+
+  async fetchHotelAdminStats(hotelId: string) {
+    const allRooms = await this.prismaService.room.findMany({
+      where: { hotelid: hotelId },
+      select: { count: true },
+    });
+    const totalRoomsCount = allRooms.reduce((sum, room) => sum + room.count, 0);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const occupiedRooms = await this.prismaService.room.findMany({
+      where: {
+        hotelid: hotelId,
+        Bookings: {
+          some: {
+            startdate: { lte: today },
+            enddate: { gte: today },
+          },
+        },
+      },
+      include: {
+        Bookings: {
+          where: {
+            startdate: { lte: today },
+            enddate: { gte: today },
+          },
+          select: {
+            booking_count: true,
+          },
+        },
+      },
+    });
+    const occupiedRoomsCount = occupiedRooms.reduce((sum, room) => {
+      return (
+        sum +
+        room.Bookings.reduce((roomSum, booking) => {
+          return roomSum + booking.booking_count;
+        }, 0)
+      );
+    }, 0);
+
+    const totalBookings = await this.prismaService.bookings.count({
+      where: { hotelid: hotelId },
+    });
+
+    return {
+      totalRooms: totalRoomsCount,
+      occupiedRooms: occupiedRoomsCount,
+      totalBookings: totalBookings,
+    };
+  }
+
+  async upcomingBookings(hotelId: string) {
+    const now = new Date();
+
+    return await this.prismaService.bookings.findMany({
+      where: {
+        hotelid: hotelId,
+        startdate: { gt: now },
+      },
+      include: {
+        room: {
+          select: {
+            id: true,
+            name: true,
+            no_of_guests: true,
+            price: true,
+          },
+        },
+        hotel: {
+          select: {
+            id: true,
+            name: true,
+            place: true,
+          },
+        },
+      },
+      orderBy: {
+        startdate: 'asc',
+      },
+    });
   }
 }

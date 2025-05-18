@@ -16,10 +16,6 @@ export class HotelsService {
   ) {}
   saltOrRounds: number = 10;
 
-  async getHotelsCount(): Promise<number> {
-    return this.prismaService.hotel.count();
-  }
-
   async createHotel(request: CreateHotelDto) {
     const { requestId, ...hotelData } = request;
     await this.prismaService.hotel.create({

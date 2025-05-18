@@ -34,9 +34,21 @@ export class BookingService {
     });
   }
 
-  async getBookingsByHotelId(hotelId: string): Promise<BookingDto[]> {
+  async getBookingsByHotelId(hotelId: string) {
     return this.prismaService.bookings.findMany({
       where: { hotelid: hotelId },
+      include: {
+        room: {
+          select: {
+            name: true,
+          },
+        },
+        user: {
+          select: {
+            name: true,
+          },
+        },
+      },
     });
   }
 
