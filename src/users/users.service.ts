@@ -76,6 +76,14 @@ export class UsersService {
     });
   }
 
+  async removeFromFavourites(favId: string) {
+    return await this.prismaService.favourites.delete({
+      where: {
+        id: favId,
+      },
+    });
+  }
+
   async fetchFavouritesByUserId(userId: string) {
     const favourites = await this.prismaService.favourites.findMany({
       where: { userid: userId },

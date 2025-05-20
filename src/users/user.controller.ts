@@ -7,6 +7,7 @@ import {
   Get,
   Post,
   Param,
+  Delete,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from '../dto/update-user.dto';
@@ -36,6 +37,12 @@ export class UserController {
       addToFavouritesDto.userId,
       addToFavouritesDto.hotelId,
     );
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Delete('removefromfavourites')
+  removeFromFavourites(@Body() removeFromFavourites: { favId: string }) {
+    return this.usersService.removeFromFavourites(removeFromFavourites.favId);
   }
 
   @HttpCode(HttpStatus.OK)

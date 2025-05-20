@@ -22,6 +22,7 @@ export class BookingService {
         room: {
           select: {
             name: true,
+            price: true,
           },
         },
         hotel: {
