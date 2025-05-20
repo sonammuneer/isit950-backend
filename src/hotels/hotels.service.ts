@@ -33,6 +33,8 @@ export class HotelsService {
         phonenumber: '',
         dateofbirth: '',
         role: 'admin',
+        rating: 0,
+        ratingCount: 0,
       });
 
       await this.prismaService.onboardingRequests.delete({

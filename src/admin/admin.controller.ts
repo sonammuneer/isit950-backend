@@ -17,6 +17,7 @@ import { CreateRoomDto } from '../dto/create-room.dto';
 import { BookingService } from '../booking/booking.service';
 import { CreateOnboardingRequestDto } from '../dto/create-onboarding-request.dto';
 import { UpdateHotelDto } from '../dto/update-hotel.dto';
+import { BlockDateDto } from '../dto/block-date.dto';
 
 @Controller('admin')
 export class AdminController {
@@ -112,5 +113,37 @@ export class AdminController {
   @Get('superuser/stats')
   superUserStats() {
     return this.adminService.superUserStats();
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('customer/rate')
+  async rateCustomer(@Body() request: { userId: string; rating: number }) {
+    const result = await this.adminService.rateCustomer(request);
+    return result;
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('dates/block')
+  async blockDates(@Body() request: BlockDateDto) {
+    const result = await this.adminService.blockDates(request);
+    return result;
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Put('dates/blocked/get')
+  async getBlockedDates(
+    @Body() request: { roomId: string; startDate: string; endDate: string },
+  ) {
+    const result = await this.adminService.getBlockedDates(request);
+    return result;
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Put('dates/booked/get')
+  async getBookedDates(
+    @Body() request: { roomId: string; startDate: string; endDate: string },
+  ) {
+    const result = await this.adminService.getBookedDates(request);
+    return result;
   }
 }

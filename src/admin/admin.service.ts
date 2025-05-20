@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { UserDto } from '../dto/user-dto';
 import { FetchUserDto } from '../dto/fetch-user-dto';
 import { CreateOnboardingRequestDto } from '../dto/create-onboarding-request.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { BlockDateDto } from '../dto/block-date.dto';
 
 @Injectable()
 export class AdminService {
@@ -169,11 +170,24 @@ export class AdminService {
       },
     });
 
-    const totalRevenue = revenueBookings.reduce(
-      (sum, booking) =>
-        sum + (booking.booking_count * booking.room.price * 10) / 100,
-      0,
+    const revenueSubscription = await this.prismaService.subscriptions.findMany(
+      {
+        select: {
+          amountpaid: true,
+        },
+      },
     );
+
+    const totalRevenue =
+      revenueBookings.reduce(
+        (sum, booking) =>
+          sum + (booking.booking_count * booking.room.price * 10) / 100,
+        0,
+      ) +
+      revenueSubscription.reduce(
+        (sum, subscription) => sum + subscription.amountpaid,
+        0,
+      );
 
     const thisDate = new Date();
     thisDate.setHours(23, 59, 59, 999);
@@ -200,5 +214,144 @@ export class AdminService {
       totalRevenue: totalRevenue,
       totalGuestsServed: totalGuestsServed,
     };
+  }
+
+  async rateCustomer(request: { userId: string; rating: number }) {
+    const currentRating = await this.prismaService.user.findFirst({
+      where: {
+        id: request.userId,
+      },
+      select: {
+        rating: true,
+        ratingCount: true,
+      },
+    });
+
+    const newRating = Math.floor(
+      (currentRating.rating * currentRating.ratingCount + request.rating) /
+        (currentRating.ratingCount + 1),
+    );
+
+    return await this.prismaService.user.update({
+      where: {
+        id: request.userId,
+      },
+      data: {
+        rating: newRating,
+        ratingCount: currentRating.ratingCount + 1,
+      },
+      omit: {
+        password: true,
+      },
+    });
+  }
+
+  async blockDates(request: BlockDateDto) {
+    const startdate = new Date(request.startDate);
+    const enddate = new Date(request.endDate);
+
+    return await this.prismaService.roomBlock.create({
+      data: { ...request, startDate: startdate, endDate: enddate },
+    });
+  }
+
+  async getBlockedDates(request: {
+    roomId: string;
+    startDate: string;
+    endDate: string;
+  }): Promise<string[]> {
+    const startDate = new Date(request.startDate);
+    const endDate = new Date(request.endDate);
+
+    if (startDate > endDate) {
+      throw new BadRequestException('End date must be after start date');
+    }
+
+    const blocks = await this.prismaService.roomBlock.findMany({
+      where: {
+        roomId: request.roomId,
+        OR: [
+          {
+            startDate: { gte: startDate, lte: endDate },
+          },
+          {
+            endDate: { gte: startDate, lte: endDate },
+          },
+          {
+            startDate: { lte: startDate },
+            endDate: { gte: endDate },
+          },
+        ],
+      },
+      select: {
+        startDate: true,
+        endDate: true,
+      },
+    });
+
+    const allBlockedDates = new Set<string>();
+
+    blocks.forEach((block) => {
+      const blockStart = new Date(
+        Math.max(startDate.getTime(), new Date(block.startDate).getTime()),
+      );
+
+      const blockEnd = new Date(
+        Math.min(endDate.getTime(), new Date(block.endDate).getTime()),
+      );
+
+      let currentDate = new Date(blockStart);
+      while (currentDate <= blockEnd) {
+        const dateStr = currentDate.toISOString().split('T')[0];
+        allBlockedDates.add(dateStr);
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+    });
+
+    return Array.from(allBlockedDates).sort();
+  }
+
+  async getBookedDates(request: {
+    roomId: string;
+    startDate: string;
+    endDate: string;
+  }): Promise<string[]> {
+    const startDate = new Date(request.startDate);
+    const endDate = new Date(request.endDate);
+
+    if (startDate > endDate) {
+      throw new BadRequestException('End date must be after start date');
+    }
+
+    const bookings = await this.prismaService.bookings.findMany({
+      where: {
+        roomid: request.roomId,
+        OR: [{ startdate: { lte: endDate }, enddate: { gte: startDate } }],
+      },
+      select: {
+        startdate: true,
+        enddate: true,
+      },
+    });
+
+    const bookedDates = new Set<string>();
+
+    bookings.forEach((booking) => {
+      const bookingStart = new Date(
+        Math.max(startDate.getTime(), new Date(booking.startdate).getTime()),
+      );
+
+      const bookingEnd = new Date(
+        Math.min(endDate.getTime(), new Date(booking.enddate).getTime()),
+      );
+
+      let currentDate = new Date(bookingStart);
+      while (currentDate <= bookingEnd) {
+        bookedDates.add(currentDate.toISOString().split('T')[0]);
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+    });
+
+    return Array.from(bookedDates).sort();
   }
 }

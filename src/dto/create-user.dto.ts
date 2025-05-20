@@ -6,4 +6,6 @@ export class CreateUserDto {
   phonenumber: string;
   dateofbirth: string;
   role: string;
+  rating: number = 0;
+  ratingCount: number = 0;
 }

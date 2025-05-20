@@ -10,16 +10,19 @@ datasource db {
 }
 
 model User {
-  id          String       @id @default(uuid())
-  email       String       @unique
-  password    String
-  name        String
-  phonenumber String
-  dateofbirth String
-  role        String?
-  favourites  Favourites[]
-  Review      Review[]
-  Bookings    Bookings[]
+  id            String          @id @default(uuid())
+  email         String          @unique
+  password      String
+  name          String
+  phonenumber   String
+  dateofbirth   String
+  role          String?
+  favourites    Favourites[]
+  Review        Review[]
+  Bookings      Bookings[]
+  Subscriptions Subscriptions[]
+  rating        Int?
+  ratingCount   Int?
 }
 
 model Hotel {
@@ -36,14 +39,15 @@ model Hotel {
 }
 
 model Room {
-  id           String     @id @default(uuid())
-  name         String     @unique
+  id           String      @id @default(uuid())
+  name         String
   count        Int
   no_of_guests Int
   price        Int
   hotelid      String
-  hotel        Hotel      @relation(fields: [hotelid], references: [id], onDelete: Cascade)
+  hotel        Hotel       @relation(fields: [hotelid], references: [id], onDelete: Cascade)
   Bookings     Bookings[]
+  RoomBlock    RoomBlock[]
 }
 
 model Bookings {
@@ -75,14 +79,14 @@ model Favourites {
 }
 
 model Review {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   hotelid     String
-  hotel       Hotel    @relation(fields: [hotelid], references: [id], onDelete: Cascade)
+  hotel       Hotel     @relation(fields: [hotelid], references: [id], onDelete: Cascade)
   description String
   rating      Int
   time        DateTime?
   userid      String
-  user        User     @relation(fields: [userid], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userid], references: [id], onDelete: Cascade)
 }
 
 model OnboardingRequests {
@@ -91,4 +95,20 @@ model OnboardingRequests {
   location         String
   hoteladminemail  String
   hoteldescription String?
+}
+
+model Subscriptions {
+  id         String   @id @default(uuid())
+  expireson  DateTime
+  userid     String
+  user       User     @relation(fields: [userid], references: [id], onDelete: Cascade)
+  amountpaid Int?
+}
+
+model RoomBlock {
+  id        String   @id @default(uuid())
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  startDate DateTime
+  endDate   DateTime
 }

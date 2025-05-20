@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { CreateSubscriptionDto } from '../dto/create-subscription.dto';
 
 @Controller('user')
 export class UserController {
@@ -40,14 +41,22 @@ export class UserController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @Delete('removefromfavourites')
-  removeFromFavourites(@Body() removeFromFavourites: { favId: string }) {
-    return this.usersService.removeFromFavourites(removeFromFavourites.favId);
-  }
-
-  @HttpCode(HttpStatus.OK)
   @Get('favourites/fetch/:userid')
   fetchFavouritesByUserId(@Param() param: any) {
     return this.usersService.fetchFavouritesByUserId(param.userid);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('subscription/create')
+  createSubscription(@Body() request: CreateSubscriptionDto) {
+    return this.usersService.createSubscription(request);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Put('subscription/update')
+  updateSubscription(
+    @Body() request: { id: string; expireson: string; amountpaid: number },
+  ) {
+    return this.usersService.updateSubscription(request);
   }
 }

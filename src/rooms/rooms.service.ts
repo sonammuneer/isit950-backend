@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateRoomDto } from '../dto/create-room.dto';
 import { RoomDto } from '../dto/room-dto';
@@ -48,35 +48,46 @@ export class RoomsService {
       },
     });
 
+    if (!room) {
+      throw new NotFoundException('Room not found');
+    }
+
     if (request.roomCount > room.count) {
       return { availability: false };
     }
 
-    const overlappingBookings = await this.prismaService.bookings.findMany({
-      where: {
-        roomid: request.roomId,
-        OR: [
-          {
-            startdate: { lt: enddate },
-            enddate: { gt: startdate },
-          },
-          {
-            startdate: { lte: startdate },
-            enddate: { gte: enddate },
-          },
-        ],
-      },
-      select: {
-        booking_count: true,
-      },
-    });
+    const [overlappingBookings, overlappingBlocks] = await Promise.all([
+      this.prismaService.bookings.findMany({
+        where: {
+          roomid: request.roomId,
+          OR: [
+            { startdate: { lt: enddate }, enddate: { gt: startdate } },
+            { startdate: { lte: startdate }, enddate: { gte: enddate } },
+          ],
+        },
+        select: { booking_count: true },
+      }),
+      this.prismaService.roomBlock.findMany({
+        where: {
+          roomId: request.roomId,
+          OR: [
+            { startDate: { lt: enddate }, endDate: { gt: startdate } },
+            { startDate: { lte: startdate }, endDate: { gte: enddate } },
+          ],
+        },
+        select: { id: true },
+      }),
+    ]);
+
+    if (overlappingBlocks.length > 0) {
+      return { availability: false };
+    }
 
     const totalBooked = overlappingBookings.reduce(
       (sum, booking) => sum + booking.booking_count,
       0,
     );
 
-    const availableRooms = room.count - totalBooked;
-    return { availability: availableRooms >= request.roomCount };
+    return { availability: room.count - totalBooked >= request.roomCount };
   }
 }

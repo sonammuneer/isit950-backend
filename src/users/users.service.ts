@@ -4,6 +4,7 @@ import { CreateUserDto as CreateUserDto } from '../dto/create-user.dto';
 import { UserDto } from '../dto/user-dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { FetchUserDto } from '../dto/fetch-user-dto';
+import { CreateSubscriptionDto } from '../dto/create-subscription.dto';
 
 @Injectable()
 export class UsersService {
@@ -61,6 +62,13 @@ export class UsersService {
       where: {
         email: email,
       },
+      include: {
+        Subscriptions: {
+          select: {
+            expireson: true,
+          },
+        },
+      },
       omit: {
         password: true,
       },
@@ -72,14 +80,6 @@ export class UsersService {
       data: {
         userid: userId,
         hotelid: hotelId,
-      },
-    });
-  }
-
-  async removeFromFavourites(favId: string) {
-    return await this.prismaService.favourites.delete({
-      where: {
-        id: favId,
       },
     });
   }
@@ -106,6 +106,30 @@ export class UsersService {
       },
       omit: {
         password: true,
+      },
+    });
+  }
+
+  async createSubscription(request: CreateSubscriptionDto) {
+    const expireson = new Date(request.expireson);
+    return this.prismaService.subscriptions.create({
+      data: { ...request, expireson: expireson },
+    });
+  }
+
+  async updateSubscription(request: {
+    id: string;
+    expireson: string;
+    amountpaid: number;
+  }) {
+    const newExpiryDate = new Date(request.expireson);
+    return this.prismaService.subscriptions.update({
+      where: {
+        id: request.id,
+      },
+      data: {
+        expireson: newExpiryDate,
+        amountpaid: request.amountpaid,
       },
     });
   }
