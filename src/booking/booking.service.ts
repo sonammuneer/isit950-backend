@@ -78,6 +78,7 @@ export class BookingService {
         user: {
           select: {
             name: true,
+            email: true,
           },
         },
       },
