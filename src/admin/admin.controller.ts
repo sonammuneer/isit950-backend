@@ -148,8 +148,14 @@ export class AdminController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @Put('onboard/delete')
+  @Delete('onboard/delete')
   async rejectOnboarding(@Body() request: { id: string }) {
     return await this.adminService.deleteOnboardingRequest(request);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Delete('booking/decline')
+  async declineBooking(@Body() request: { bookingId: string }) {
+    return await this.adminService.declineBooking(request.bookingId);
   }
 }
