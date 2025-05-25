@@ -384,7 +384,7 @@ export class AdminService {
   }
 
   async declineBooking(bookingId: string) {
-    const booking = await this.prismaService.bookings.delete({
+    const bookingToDelete = await this.prismaService.bookings.findFirst({
       where: {
         id: bookingId,
       },
@@ -393,12 +393,21 @@ export class AdminService {
       },
     });
 
-    if (booking.startdate > new Date(Date.now())) {
+    if (bookingToDelete.startdate < new Date(Date.now())) {
       throw new HttpException(
         "Past or today's bookings can't be updated!!",
         500,
       );
     }
+
+    const booking = await this.prismaService.bookings.delete({
+      where: {
+        id: bookingId,
+      },
+      include: {
+        hotel: true,
+      },
+    });
 
     await this.prismaService.notifications.create({
       data: {
