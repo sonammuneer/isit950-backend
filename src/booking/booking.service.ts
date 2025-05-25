@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateBookingDto } from '../dto/create-booking.dto';
 import { BookingDto } from '../dto/booking-dto';
@@ -97,6 +97,13 @@ export class BookingService {
         hotel: true,
       },
     });
+
+    if (booking.startdate > new Date(Date.now())) {
+      throw new HttpException(
+        "Past or today's bookings can't be updated!!",
+        500,
+      );
+    }
 
     await this.prismaService.notifications.create({
       data: {
