@@ -137,4 +137,11 @@ export class UsersService {
 
     return subscription;
   }
+
+  async createSubscription(request: CreateSubscriptionDto) {
+    const expireson = new Date(request.expireson);
+    return this.prismaService.subscriptions.create({
+      data: { ...request, expireson: expireson },
+    });
+  }
 }

@@ -53,4 +53,10 @@ export class UserController {
   ) {
     return this.usersService.updateSubscription(request);
   }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('subscription/create')
+  createSubscription(@Body() request: CreateSubscriptionDto) {
+    return this.usersService.createSubscription(request);
+  }
 }

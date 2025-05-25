@@ -24,9 +24,21 @@ export class AdminService {
   async createOnboardingRequest(
     createOnboardingRequestDto: CreateOnboardingRequestDto,
   ) {
-    return this.prismaService.onboardingRequests.create({
-      data: createOnboardingRequestDto,
+    const onboardingRequest =
+      await this.prismaService.onboardingRequests.create({
+        data: createOnboardingRequestDto,
+      });
+
+    await this.prismaService.notifications.create({
+      data: {
+        userid: 'c2b0d500-de3a-4205-9cf3-0e69d934c192',
+        description:
+          'A new request for onboarding has been initiated. Checks hotels tab for more details.',
+        timestamp: new Date(Date.now()),
+      },
     });
+
+    return onboardingRequest;
   }
 
   async deleteOnboardingRequest(request: { id: string }) {
