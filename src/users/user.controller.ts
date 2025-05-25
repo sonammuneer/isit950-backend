@@ -47,12 +47,6 @@ export class UserController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @Post('subscription/create')
-  createSubscription(@Body() request: CreateSubscriptionDto) {
-    return this.usersService.createSubscription(request);
-  }
-
-  @HttpCode(HttpStatus.OK)
   @Put('subscription/update')
   updateSubscription(
     @Body() request: { id: string; expireson: string; amountpaid: number },

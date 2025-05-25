@@ -65,6 +65,7 @@ export class UsersService {
       include: {
         Subscriptions: {
           select: {
+            id: true,
             expireson: true,
           },
         },
@@ -110,20 +111,13 @@ export class UsersService {
     });
   }
 
-  async createSubscription(request: CreateSubscriptionDto) {
-    const expireson = new Date(request.expireson);
-    return this.prismaService.subscriptions.create({
-      data: { ...request, expireson: expireson },
-    });
-  }
-
   async updateSubscription(request: {
     id: string;
     expireson: string;
     amountpaid: number;
   }) {
     const newExpiryDate = new Date(request.expireson);
-    return this.prismaService.subscriptions.update({
+    const subscription = await this.prismaService.subscriptions.update({
       where: {
         id: request.id,
       },
@@ -132,5 +126,15 @@ export class UsersService {
         amountpaid: request.amountpaid,
       },
     });
+
+    await this.prismaService.notifications.create({
+      data: {
+        userid: subscription.userid,
+        description: `Congrats! Your have renewed your subscription.`,
+        timestamp: new Date(Date.now()),
+      },
+    });
+
+    return subscription;
   }
 }

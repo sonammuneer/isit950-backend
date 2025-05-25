@@ -49,9 +49,7 @@ export class BookingController {
   @HttpCode(HttpStatus.OK)
   @Delete('delete')
   cancelBooking(@Body() deleteBookingDto: { bookingId: string }) {
-    return this.bookingService.getBookingByBookingId(
-      deleteBookingDto.bookingId,
-    );
+    return this.bookingService.cancelBooking(deleteBookingDto.bookingId);
   }
 
   @HttpCode(HttpStatus.OK)

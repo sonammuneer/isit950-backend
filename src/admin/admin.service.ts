@@ -382,4 +382,25 @@ export class AdminService {
 
     return Array.from(bookedDates).sort();
   }
+
+  async declineBooking(bookingId: string) {
+    const booking = await this.prismaService.bookings.delete({
+      where: {
+        id: bookingId,
+      },
+      include: {
+        hotel: true,
+      },
+    });
+
+    await this.prismaService.notifications.create({
+      data: {
+        userid: booking.bookinguserid,
+        description: `Sorry! Your booking at ${booking.hotel.name} has been declined from the hotel management. Please check your email for more details.`,
+        timestamp: new Date(Date.now()),
+      },
+    });
+
+    return booking;
+  }
 }
