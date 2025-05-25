@@ -8,6 +8,7 @@ import { AdminModule } from './admin/admin.module';
 import { HotelsModule } from './hotels/hotels.module';
 import { RoomsModule } from './rooms/rooms.module';
 import { BookingModule } from './booking/booking.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { BookingModule } from './booking/booking.module';
     HotelsModule,
     RoomsModule,
     BookingModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

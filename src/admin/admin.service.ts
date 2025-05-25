@@ -29,6 +29,14 @@ export class AdminService {
     });
   }
 
+  async deleteOnboardingRequest(request: { id: string }) {
+    return this.prismaService.onboardingRequests.delete({
+      where: {
+        id: request.id,
+      },
+    });
+  }
+
   async fetchPendingRequests() {
     return this.prismaService.onboardingRequests.findMany();
   }
@@ -77,10 +85,30 @@ export class AdminService {
       where: { hotelid: hotelId },
     });
 
+    const revenueBookings = await this.prismaService.bookings.findMany({
+      select: {
+        booking_count: true,
+        room: {
+          select: {
+            price: true,
+          },
+        },
+      },
+      where: {
+        hotelid: hotelId,
+      },
+    });
+
+    const totalRevenue = revenueBookings.reduce(
+      (sum, booking) => sum + booking.booking_count * booking.room.price,
+      0,
+    );
+
     return {
       totalRooms: totalRoomsCount,
       occupiedRooms: occupiedRoomsCount,
       totalBookings: totalBookings,
+      totalRevenue: totalRevenue,
     };
   }
 

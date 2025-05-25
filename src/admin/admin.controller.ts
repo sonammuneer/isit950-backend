@@ -146,4 +146,10 @@ export class AdminController {
     const result = await this.adminService.getBookedDates(request);
     return result;
   }
+
+  @HttpCode(HttpStatus.OK)
+  @Put('onboard/delete')
+  async rejectOnboarding(@Body() request: { id: string }) {
+    return await this.adminService.deleteOnboardingRequest(request);
+  }
 }

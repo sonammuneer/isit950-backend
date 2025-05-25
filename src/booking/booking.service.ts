@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateBookingDto } from '../dto/create-booking.dto';
 import { BookingDto } from '../dto/booking-dto';
+import { UpdateBookingDto } from '../dto/update-booking.dto';
 
 @Injectable()
 export class BookingService {
@@ -62,6 +63,16 @@ export class BookingService {
   async cancelBooking(bookingId: string): Promise<BookingDto> {
     return this.prismaService.bookings.delete({
       where: { id: bookingId },
+    });
+  }
+
+  async updateBooking(request: UpdateBookingDto): Promise<BookingDto> {
+    return this.prismaService.bookings.update({
+      where: { id: request.id },
+      data: {
+        startdate: new Date(request.startdate),
+        enddate: new Date(request.enddate),
+      },
     });
   }
 }

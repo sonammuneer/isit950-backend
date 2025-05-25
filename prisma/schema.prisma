@@ -23,6 +23,7 @@ model User {
   Subscriptions Subscriptions[]
   rating        Int?
   ratingCount   Int?
+  Notifications Notifications[]
 }
 
 model Hotel {
@@ -111,4 +112,12 @@ model RoomBlock {
   room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
   startDate DateTime
   endDate   DateTime
+}
+
+model Notifications {
+  id          String   @id @default(uuid())
+  userid      String
+  user        User     @relation(fields: [userid], references: [id], onDelete: Cascade)
+  description String
+  timestamp   DateTime
 }

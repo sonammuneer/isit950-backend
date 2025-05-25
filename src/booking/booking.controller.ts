@@ -13,6 +13,7 @@ import { BookingService } from './booking.service';
 import { CreateBookingDto } from '../dto/create-booking.dto';
 import { CheckRoomAvailabilityDto } from '../dto/check-room-availability.dto';
 import { RoomsService } from '../rooms/rooms.service';
+import { UpdateBookingDto } from '../dto/update-booking.dto';
 
 @Controller('booking')
 export class BookingController {
@@ -25,6 +26,12 @@ export class BookingController {
   @Post('create')
   createBooking(@Body() createBookingDto: CreateBookingDto) {
     return this.bookingService.createBooking(createBookingDto);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Put('update')
+  updateBooking(@Body() updateBookingDto: UpdateBookingDto) {
+    return this.bookingService.updateBooking(updateBookingDto);
   }
 
   @HttpCode(HttpStatus.OK)
